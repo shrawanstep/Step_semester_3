@@ -1,261 +1,158 @@
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
 
-/**
- * Day 1 live-coding exercises. Each problem is isolated in a small, reusable type
- * so that the demonstrations in {@link #main(String[])} do not contain business logic.
- */
+/** Demonstrates the five Week 1 array and string programming exercises. */
 public final class Main {
-    private Main() {
-    }
+    private Main() { }
 
     public static void main(String[] args) {
-        demonstrateRockPaperScissors();
-        demonstratePalindromes();
-        demonstrateBmiReport();
-        demonstrateFirstNonRepeatingCharacter();
-        demonstrateNameReversal();
+        System.out.println("=== 1. Exam Hall Seat Duplication Checker ===");
+        checkDuplicateSeats(new int[]{101, 102, 103, 102, 105});
+        checkDuplicateSeats(new int[]{101, 102, 103, 104, 105});
+
+        System.out.println("\n=== 2. Typing Speed Test Accuracy Checker ===");
+        checkTypingAccuracy("hello world", "hello worlt");
+        checkTypingAccuracy("coding", "coding");
+
+        System.out.println("\n=== 3. Traffic Signal Streak Analyzer ===");
+        findLongestStreak("RRGGGYRR");
+        findLongestStreak("RRRRYYGG");
+
+        System.out.println("\n=== 4. Warehouse Inventory Balancer ===");
+        analyzeInventory(new int[]{20, 15, 30}, new int[]{25, 10, 30});
+
+        System.out.println("\n=== 5. Movie Review Word Length Profiler ===");
+        classifyWordLengths("This movie was absolutely fantastic and thrilling");
     }
 
-    private static void demonstrateRockPaperScissors() {
-        System.out.println("=== Rock-Paper-Scissors ===");
-        RockPaperScissorsGame game = new RockPaperScissorsGame(new Random(7));
-        for (Move playerMove : List.of(Move.ROCK, Move.PAPER, Move.SCISSORS, Move.ROCK)) {
-            RoundResult result = game.playRound(playerMove);
-            System.out.printf("Player: %-8s Computer: %-8s Result: %s%n",
-                    result.playerMove(), result.computerMove(), result.outcome());
-        }
-        System.out.println(game.summary());
-        System.out.println();
-    }
-
-    private static void demonstratePalindromes() {
-        System.out.println("=== Palindrome Checker ===");
-        String value = "A man, a plan, a canal: Panama";
-        boolean iterative = PalindromeChecker.isPalindromeIterative(value);
-        boolean recursive = PalindromeChecker.isPalindromeRecursive(value);
-        boolean reversed = PalindromeChecker.isPalindromeByArrayReversal(value);
-        require(iterative && recursive && reversed, "Palindrome sample should pass every approach.");
-        System.out.printf("%-36s | Iterative | Recursive | Array reversal%n", "Input");
-        System.out.printf("%-36s | %-9s | %-9s | %-14s%n", value, iterative, recursive, reversed);
-        System.out.println();
-    }
-
-    private static void demonstrateBmiReport() {
-        System.out.println("=== Team BMI Calculator ===");
-        List<TeamMember> team = List.of(
-                new TeamMember("Asha", 1.60, 50.0),
-                new TeamMember("Ben", 1.80, 81.0),
-                new TeamMember("Chen", 1.70, 95.0));
-        System.out.println(BmiCalculator.formatReport(team));
-    }
-
-    private static void demonstrateFirstNonRepeatingCharacter() {
-        System.out.println("=== First Non-Repeating Character ===");
-        String input = "swiss";
-        Optional<Character> result = FirstNonRepeatingCharacter.find(input);
-        require(result.orElseThrow() == 'w', "Expected 'w' for swiss.");
-        System.out.printf("Input: %-10s First non-repeating: %s%n%n", input,
-                result.map(String::valueOf).orElse("<none>"));
-    }
-
-    private static void demonstrateNameReversal() {
-        System.out.println("=== Reverse Customer Name ===");
-        char[] customerName = "Grace Hopper".toCharArray();
-        ReverseCustomerName.reverseInPlace(customerName);
-        String reversed = new String(customerName);
-        require("reppoH ecarG".equals(reversed), "Name reversal sample should pass.");
-        System.out.printf("Reversed customer name: %s%n", reversed);
-    }
-
-    private static void require(boolean condition, String message) {
-        if (!condition) {
-            throw new IllegalStateException(message);
-        }
-    }
-
-    public enum Move {
-        ROCK, PAPER, SCISSORS;
-
-        boolean defeats(Move other) {
-            return (this == ROCK && other == SCISSORS)
-                    || (this == PAPER && other == ROCK)
-                    || (this == SCISSORS && other == PAPER);
-        }
-    }
-
-    public enum Outcome {
-        WIN, LOSS, DRAW
-    }
-
-    public record RoundResult(Move playerMove, Move computerMove, Outcome outcome) {
-    }
-
-    /** Stateful game service that tracks result statistics across rounds. */
-    public static final class RockPaperScissorsGame {
-        private final Random random;
-        private int wins;
-        private int losses;
-        private int draws;
-
-        public RockPaperScissorsGame(Random random) {
-            this.random = Objects.requireNonNull(random, "random must not be null");
-        }
-
-        public RoundResult playRound(Move playerMove) {
-            Objects.requireNonNull(playerMove, "playerMove must not be null");
-            Move computerMove = Move.values()[random.nextInt(Move.values().length)];
-            Outcome outcome = playerMove == computerMove ? Outcome.DRAW
-                    : playerMove.defeats(computerMove) ? Outcome.WIN : Outcome.LOSS;
-            record(outcome);
-            return new RoundResult(playerMove, computerMove, outcome);
-        }
-
-        public GameSummary summary() {
-            return new GameSummary(wins, losses, draws);
-        }
-
-        private void record(Outcome outcome) {
-            switch (outcome) {
-                case WIN -> wins++;
-                case LOSS -> losses++;
-                case DRAW -> draws++;
-            }
-        }
-    }
-
-    public record GameSummary(int wins, int losses, int draws) {
-        public int totalRounds() {
-            return wins + losses + draws;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("Summary: %d rounds | %d wins | %d losses | %d draws",
-                    totalRounds(), wins, losses, draws);
-        }
-    }
-
-    public static final class PalindromeChecker {
-        private PalindromeChecker() {
-        }
-
-        public static boolean isPalindromeIterative(String value) {
-            String normalized = normalize(value);
-            int left = 0;
-            int right = normalized.length() - 1;
-            while (left < right) {
-                if (normalized.charAt(left++) != normalized.charAt(right--)) {
-                    return false;
+    /** Prints each distinct seat number that occurs more than once, using arrays and loops only. */
+    public static void checkDuplicateSeats(int[] seatNumbers) {
+        Objects.requireNonNull(seatNumbers, "seatNumbers must not be null");
+        boolean duplicateFound = false;
+        for (int i = 0; i < seatNumbers.length; i++) {
+            if (appearsEarlier(seatNumbers, i)) continue;
+            for (int j = i + 1; j < seatNumbers.length; j++) {
+                if (seatNumbers[i] == seatNumbers[j]) {
+                    System.out.println("Duplicate Seat Number Found: " + seatNumbers[i]);
+                    duplicateFound = true;
+                    break;
                 }
             }
-            return true;
         }
+        if (!duplicateFound) System.out.println("No Duplicate Seats Found");
+    }
 
-        public static boolean isPalindromeRecursive(String value) {
-            String normalized = normalize(value);
-            return isPalindromeRecursive(normalized, 0, normalized.length() - 1);
+    private static boolean appearsEarlier(int[] values, int currentIndex) {
+        for (int index = 0; index < currentIndex; index++) {
+            if (values[index] == values[currentIndex]) return true;
         }
+        return false;
+    }
 
-        public static boolean isPalindromeByArrayReversal(String value) {
-            String normalized = normalize(value);
-            char[] characters = normalized.toCharArray();
-            ReverseCustomerName.reverseInPlace(characters);
-            return normalized.equals(new String(characters));
+    /** Compares equal-length strings and prints accuracy plus the first mismatch, if any. */
+    public static void checkTypingAccuracy(String original, String typed) {
+        validateEqualLengthTexts(original, typed);
+        int matches = 0;
+        int firstMismatch = -1;
+        for (int index = 0; index < original.length(); index++) {
+            if (original.charAt(index) == typed.charAt(index)) {
+                matches++;
+            } else if (firstMismatch == -1) {
+                firstMismatch = index;
+            }
         }
-
-        private static boolean isPalindromeRecursive(String value, int left, int right) {
-            return left >= right || (value.charAt(left) == value.charAt(right)
-                    && isPalindromeRecursive(value, left + 1, right - 1));
-        }
-
-        private static String normalize(String value) {
-            Objects.requireNonNull(value, "value must not be null");
-            return value.replaceAll("[^A-Za-z0-9]", "").toLowerCase(Locale.ROOT);
+        double accuracy = original.isEmpty() ? 100.0 : (matches * 100.0) / original.length();
+        System.out.printf(Locale.ROOT, "Matched: %d/%d | Accuracy: %.2f%%", matches, original.length(), accuracy);
+        if (firstMismatch == -1) {
+            System.out.println(" | No Mismatches");
+        } else {
+            System.out.printf(" | First Mismatch at position %d ('%c' vs '%c')%n",
+                    firstMismatch + 1, original.charAt(firstMismatch), typed.charAt(firstMismatch));
         }
     }
 
-    public record TeamMember(String name, double heightMeters, double weightKilograms) {
-        public TeamMember {
-            Objects.requireNonNull(name, "name must not be null");
-            if (name.isBlank() || heightMeters <= 0 || weightKilograms <= 0) {
-                throw new IllegalArgumentException("Name, height, and weight must be valid positive values.");
-            }
+    private static void validateEqualLengthTexts(String original, String typed) {
+        Objects.requireNonNull(original, "original must not be null");
+        Objects.requireNonNull(typed, "typed must not be null");
+        if (original.length() != typed.length()) {
+            throw new IllegalArgumentException("Original and typed text must have equal length.");
         }
     }
 
-    public enum BmiStatus {
-        UNDERWEIGHT, NORMAL, OVERWEIGHT, OBESE
+    /** Finds the color and length of the first longest continuous signal streak. */
+    public static void findLongestStreak(String signalLog) {
+        Objects.requireNonNull(signalLog, "signalLog must not be null");
+        if (signalLog.isEmpty()) {
+            System.out.println("Signal log is empty; no streak found.");
+            return;
+        }
+        char longestColor = signalLog.charAt(0);
+        int longestLength = 1;
+        char currentColor = longestColor;
+        int currentLength = 1;
+        for (int index = 1; index < signalLog.length(); index++) {
+            char reading = signalLog.charAt(index);
+            if (reading == currentColor) currentLength++;
+            else { currentColor = reading; currentLength = 1; }
+            if (currentLength > longestLength) {
+                longestLength = currentLength;
+                longestColor = currentColor;
+            }
+        }
+        System.out.printf("Longest Streak: '%c' repeated %d times%n", longestColor, longestLength);
     }
 
-    public static final class BmiCalculator {
-        private BmiCalculator() {
-        }
-
-        public static double calculate(double weightKilograms, double heightMeters) {
-            if (weightKilograms <= 0 || heightMeters <= 0) {
-                throw new IllegalArgumentException("Weight and height must be positive.");
+    /** Prints totals, balance state, and the earliest location of the highest quantity. */
+    public static void analyzeInventory(int[] sectionA, int[] sectionB) {
+        validateInventory(sectionA, sectionB);
+        int totalA = 0, totalB = 0, highestQuantity = Integer.MIN_VALUE, highestIndex = -1;
+        char highestSection = 'A';
+        for (int index = 0; index < sectionA.length; index++) {
+            totalA += sectionA[index];
+            if (sectionA[index] > highestQuantity) {
+                highestQuantity = sectionA[index]; highestSection = 'A'; highestIndex = index;
             }
-            return weightKilograms / (heightMeters * heightMeters);
         }
-
-        public static BmiStatus classify(double bmi) {
-            if (bmi < 18.5) return BmiStatus.UNDERWEIGHT;
-            if (bmi < 25.0) return BmiStatus.NORMAL;
-            if (bmi < 30.0) return BmiStatus.OVERWEIGHT;
-            return BmiStatus.OBESE;
-        }
-
-        public static String formatReport(List<TeamMember> team) {
-            Objects.requireNonNull(team, "team must not be null");
-            StringBuilder report = new StringBuilder("Name       | Height (m) | Weight (kg) | BMI   | Status\n")
-                    .append("-----------+------------+-------------+-------+------------\n");
-            for (TeamMember member : team) {
-                double bmi = calculate(member.weightKilograms(), member.heightMeters());
-                report.append(String.format(Locale.ROOT, "%-10s | %10.2f | %11.1f | %5.1f | %s%n",
-                        member.name(), member.heightMeters(), member.weightKilograms(), bmi, classify(bmi)));
+        for (int index = 0; index < sectionB.length; index++) {
+            totalB += sectionB[index];
+            if (sectionB[index] > highestQuantity) {
+                highestQuantity = sectionB[index]; highestSection = 'B'; highestIndex = index;
             }
-            return report.toString();
+        }
+        String status = totalA == totalB ? "Balanced" : "Not Balanced";
+        System.out.printf("Section A Total: %d | Section B Total: %d | Status: %s | Highest Quantity: %d (Section %c, Item %d)%n",
+                totalA, totalB, status, highestQuantity, highestSection, highestIndex + 1);
+    }
+
+    private static void validateInventory(int[] sectionA, int[] sectionB) {
+        Objects.requireNonNull(sectionA, "sectionA must not be null");
+        Objects.requireNonNull(sectionB, "sectionB must not be null");
+        if (sectionA.length != sectionB.length || sectionA.length == 0) {
+            throw new IllegalArgumentException("Both sections must be non-empty arrays of equal length.");
         }
     }
 
-    public static final class FirstNonRepeatingCharacter {
-        private FirstNonRepeatingCharacter() {
-        }
-
-        /** Uses a frequency map followed by an ordered scan to preserve input order. */
-        public static Optional<Character> find(String value) {
-            Objects.requireNonNull(value, "value must not be null");
-            Map<Character, Integer> frequencies = new LinkedHashMap<>();
-            for (char character : value.toCharArray()) {
-                frequencies.merge(character, 1, Integer::sum);
+    /** Counts short (1-4), medium (5-8), and long (9+) words in a review. */
+    public static void classifyWordLengths(String review) {
+        Objects.requireNonNull(review, "review must not be null");
+        int shortWords = 0, mediumWords = 0, longWords = 0;
+        String trimmedReview = review.trim();
+        if (!trimmedReview.isEmpty()) {
+            for (String word : trimmedReview.split("\\s+")) {
+                int letterCount = countLetters(word);
+                if (letterCount >= 1 && letterCount <= 4) shortWords++;
+                else if (letterCount <= 8) mediumWords++;
+                else longWords++;
             }
-            for (char character : value.toCharArray()) {
-                if (frequencies.get(character) == 1) {
-                    return Optional.of(character);
-                }
-            }
-            return Optional.empty();
         }
+        System.out.printf("Short: %d | Medium: %d | Long: %d%n", shortWords, mediumWords, longWords);
     }
 
-    public static final class ReverseCustomerName {
-        private ReverseCustomerName() {
+    private static int countLetters(String word) {
+        int count = 0;
+        for (int index = 0; index < word.length(); index++) {
+            if (Character.isLetter(word.charAt(index))) count++;
         }
-
-        /** Reverses the supplied character array without allocating a second character array. */
-        public static void reverseInPlace(char[] characters) {
-            Objects.requireNonNull(characters, "characters must not be null");
-            for (int left = 0, right = characters.length - 1; left < right; left++, right--) {
-                char temporary = characters[left];
-                characters[left] = characters[right];
-                characters[right] = temporary;
-            }
-        }
+        return count;
     }
 }
