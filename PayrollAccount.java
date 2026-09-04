@@ -1,0 +1,1 @@
+public class PayrollAccount {private double salary;PayrollAccount(double salary){this.salary=salary;}void addBonus(double amount){if(amount>0)salary+=amount;}double getSalary(){return salary;}public static void main(String[]x){PayrollAccount p=new PayrollAccount(40000);p.addBonus(5000);System.out.println("Final salary: "+p.getSalary());}}

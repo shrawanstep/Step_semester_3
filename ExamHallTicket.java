@@ -1,0 +1,1 @@
+public class ExamHallTicket {String name;int room;ExamHallTicket(String n,int r){name=n;room=r;}public static void main(String[]x){ExamHallTicket a=new ExamHallTicket("Ravi",3),b=a,c=new ExamHallTicket("Ravi",3);System.out.println(b==a);System.out.println(c==a);}}

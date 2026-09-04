@@ -1,0 +1,1 @@
+public class EmployeeConstructor {String name,id;double salary;EmployeeConstructor(String n,String i,double s){name=n;id=i;salary=s;}EmployeeConstructor(String n,String i){this(n,i,0);}public static void main(String[]x){System.out.println(new EmployeeConstructor("Ravi","E1",50000).name);}}

@@ -1,0 +1,1 @@
+public class EmployeeStaticDemo {String name;static String company="SRM";static int count;EmployeeStaticDemo(String n){name=n;count++;}static void printInfo(){System.out.println(company);System.out.println("Employees created: "+count);}public static void main(String[]x){new EmployeeStaticDemo("Ravi");new EmployeeStaticDemo("Meera");printInfo();}}

@@ -1,0 +1,1 @@
+public class LibraryInventory {String title,isbn;LibraryInventory(String t,String i){title=t;isbn=i;}void print(){System.out.println(title+" | "+isbn);}public static void main(String[]x){LibraryInventory[]a={new LibraryInventory("Clean Code","978"),new LibraryInventory("1984","045")};for(int i=0;i<a.length;i++)a[i].print();}}
