@@ -2,6 +2,11 @@ package gym;
 
 import java.util.Arrays;
 
+// Problem 1: Validation and batch sign-up
+// Problem 2: Inheritance hierarchy and session totals
+// Problem 3: Late-fee logic and history tracking
+// Problem 4: Polymorphic batch printing
+// Problem 5: Membership numbers, referral validation, fee payment and weekly check-ins
 public class GymMember {
     private static int nextMembershipNumber = 2000;
 
